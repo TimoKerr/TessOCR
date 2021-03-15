@@ -40,8 +40,31 @@ def erosion(img):
     erosion_img = cv2.erode(img,kernel,iterations = 1)
     return erosion_img
 
+
 def pipeline(img, scale):
     img = denoise(img)
     img = super_res(img, scale)
     img_bn, img = otsu_binarisation(img)
     return img
+
+def define_boundaries(img):
+    """ Function that detects the contours and removes all the noise that is not text.
+    Finds contours, keeps track of the largest one, draws contours on image"""
+    ret, th = cv2.threshold(img, 127,255, 0)    
+    contours, hierarchy = cv2.findContours(th, cv2.RETR_EXTERNAL, 1)
+    cnts = contours
+    max = 0    #----Variable to keep track of the largest area----
+    c = 0      #----Variable to store the contour having largest area---
+    for i in range(len(contours)):
+        if (cv2.contourArea(cnts[i]) > max):
+            max = cv2.contourArea(cnts[i])
+            c = i
+    rgb_img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    #rep = cv2.drawContours(rgb_img, contours, c, (0,255,0), 3) 
+
+    mask = np.zeros_like(img_processed_lic) # Create mask where white is what we want, black otherwise
+    cv2.drawContours(mask, contours, c, 255, -1) # Draw filled contour in mask
+    out = np.zeros_like(img_processed_lic) # Extract out the object and place into output image
+    out[mask == 255] = img_processed_lic[mask == 255]
+
+    return out
