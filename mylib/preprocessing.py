@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 def uniform_binarisation(img):
     """ uses uniform binarisation"""
@@ -62,9 +63,9 @@ def define_boundaries(img):
     rgb_img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     #rep = cv2.drawContours(rgb_img, contours, c, (0,255,0), 3) 
 
-    mask = np.zeros_like(img_processed_lic) # Create mask where white is what we want, black otherwise
+    mask = np.zeros_like(img) # Create mask where white is what we want, black otherwise
     cv2.drawContours(mask, contours, c, 255, -1) # Draw filled contour in mask
-    out = np.zeros_like(img_processed_lic) # Extract out the object and place into output image
-    out[mask == 255] = img_processed_lic[mask == 255]
+    out = np.zeros_like(img) # Extract out the object and place into output image
+    out[mask == 255] = img[mask == 255]
 
     return out
