@@ -1,0 +1,5 @@
+numpy
+pytesseract
+opencv-python
+ipython
+ipykernel
