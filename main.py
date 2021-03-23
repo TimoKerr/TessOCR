@@ -1,28 +1,28 @@
 import cv2
 import pytesseract
+from pytesseract import Output
+from PIL import Image
+import io
+
 
 from fastapi import FastAPI, File, UploadFile
 
 from mylib import preprocessing
 
-image_name = "data/prakrit.png"
-img_cv2 = cv2.imread(image_name)
-
-img_preprocessed = preprocessing.pipeline(img_cv2, 3)
-img_preprocessed_masked = preprocessing.define_boundaries(img_preprocessed)
-
-cv2.imwrite("data/Preprocessed_image.png", img_preprocessed)
-cv2.imwrite("data/Preprocessed_image_mask.png", img_preprocessed_masked)
-
-text = pytesseract.image_to_string(img_preprocessed,lang='hin+eng')
-with open('output/OCRd.txt', mode = 'w') as f:
-    f.write(text)
-
-
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"App use": "OCR-engine"}
 
-@app.post("/files/")
+@app.post("/OCR/")
 async def create_file(file: bytes = File(...)):
-    return {"file_size": len(file)}
+    input_image = Image.open(io.BytesIO(file)).convert("RGB")
+    text = pytesseract.image_to_string(input_image,lang='hin+eng',config ='--oem 3')
+    text = text.replace("\n", " ")
+    with open("output.txt", "w") as output_file:
+        output_file.write(text)
+    return text, output_file
+
+
 

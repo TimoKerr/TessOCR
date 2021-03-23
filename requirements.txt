@@ -7,3 +7,7 @@ black
 fastapi
 uvicorn
 python-multipart
+streamlit
+requests-toolbelt
+requests
+ftfy
