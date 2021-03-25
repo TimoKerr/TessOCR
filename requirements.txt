@@ -10,4 +10,4 @@ python-multipart
 streamlit
 requests-toolbelt
 requests
-ftfy
+aiofiles
